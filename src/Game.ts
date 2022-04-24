@@ -1,12 +1,19 @@
 import * as PIXI  from "pixi.js"
+import { ReelsView } from "./components/reels/ReelsView";
+import { ReelsController } from "./components/reels/ReelsController";
+import { UIView } from "./components/ui/UIView";
+import { UIController } from "./components/ui/UIController";
 
 export class Game{
 
     private _renderer: PIXI.AbstractRenderer;
     private _stage : PIXI.Container;
+    private _uiView : UIView;
+    private _uiController : UIController;
+    private _reelsView : ReelsView;
+    private _reelsController : ReelsController;
 
-    constructor() {
-
+    constructor(){
         // Set up the pixi renderer and add it to the html doc
         this._renderer = PIXI.autoDetectRenderer({
             width : window.innerWidth,
@@ -15,32 +22,39 @@ export class Game{
         });
         document.body.appendChild(this._renderer.view);
         
+        // instantiate Reels classes
+        this._reelsView = new ReelsView();
+        this._reelsController = new ReelsController(this._reelsView);
+        
+        // instantiate UI classes
+        this._uiView = new UIView();
+        this._uiController = new UIController(this._uiView);
+
         // Tell the renderer to render the stage, this will be our main container
         this._stage = new PIXI.Container();
+        this._stage.addChild(this._reelsView, this._uiView);
     }
 
-    /**
-     * Wait until the assets are loaded before we start the game ;)
-     */
     public async init() {
-        await this._loadAssets();
-        this._start();
-
-        // Display a simple asset for now
-        const logo = new PIXI.Sprite(PIXI.Texture.from("assets/1.png"));
-        logo.anchor.set(0.5, 0);
-        logo.position.set(this._renderer.width / 2, 20);
-        this._stage.addChild(logo);
-    }
-
-    private async _loadAssets() : Promise<any>{
-        return new Promise((resolve)=>{
-            PIXI.Loader.shared.add("assets/1.png");
-		    PIXI.Loader.shared.load(resolve);
+        // load the reels assets
+        await this._reelsController.loadAssets().catch(error => {
+            console.log(error.message);
         });
+
+        // load the ui assets
+        await this._uiController.loadAssets().catch(error => {
+            console.log(error.message);
+        });
+
+        // init the controllers
+        this._reelsController.init();
+        this._uiController.init();
+
+        // Start the game loop
+        this._start();
     }
 
-    private _start() {
+    private _start() : void {
 		var lastTime = requestAnimationFrame(()=>{});
 		function loopHandler(time: number){
 			this.onTick(time - lastTime);
