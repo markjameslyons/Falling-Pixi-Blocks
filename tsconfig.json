@@ -6,7 +6,8 @@
     "module": "es6",
     "target": "es6",
     "resolveJsonModule": true,
-    "allowJs": true
+    "allowJs": true,
+    "sourceMap": true
   },
   "files": ["src/index.ts"]
 }
