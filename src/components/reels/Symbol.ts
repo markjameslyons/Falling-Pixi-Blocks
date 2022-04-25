@@ -6,7 +6,7 @@ export class Symbol extends Sprite{
 
     private _delayTime : number = 0;
     private _stopPositionY : number  = 1000;
-
+    private _reelsPosition : Point | undefined;;
 
     constructor(symbolIndex: number, reelsPosition : Point, startPosition? : Point){
         super();
@@ -17,6 +17,7 @@ export class Symbol extends Sprite{
         else {
             this.position.set(reelsPosition.x, reelsPosition.y);
         }
+        this._reelsPosition = reelsPosition;
         
         // For now just assign random texture
         const symbolNum = Math.floor(Math.random() * 8) + 1;
@@ -31,7 +32,7 @@ export class Symbol extends Sprite{
             y : stopPosition,
             duration : duration,
             delay : this._delayTime / 1000,
-            ease: "power2.in",
+            ease: "powe4.in",
             callbackScope : this,
             onComplete : () => {
                 console.log("symbol out");
@@ -40,10 +41,30 @@ export class Symbol extends Sprite{
         return symbolOutTween;
     }
 
-    public spinIn() : void {}
-
-    public setStopPosition(yPosition:number) : void {
-        this._stopPositionY = yPosition;
+    public tumbleIn() : GSAPTween {
+        if(this._reelsPosition !== undefined){
+            const stopPosition = this._reelsPosition.y;
+            const speed = 4000;
+            const duration = this._stopPositionY / speed;
+            const symbolOutTween = gsap.to(this, {
+                y : stopPosition,
+                duration : duration,
+                delay : this._delayTime / 1000,
+                ease: "power2.in",
+                callbackScope : this,
+                onComplete : () => {
+                    gsap.fromTo(this,{
+                        y : this.y,
+                    },{
+                        duration : 0.1,
+                        y : this.y-12,
+                        yoyo : true,
+                        repeat : 1
+                    });
+                }
+            });
+            return symbolOutTween;
+        }
     }
 
 }

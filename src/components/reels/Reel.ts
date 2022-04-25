@@ -23,11 +23,14 @@ export class Reel extends Container{
      */
     public setSymbols(init : boolean) : void {
 
+        // reset the collection of symbols
         this._currentSymbols = [];
+        
+        // remove any previous symbols from the stage
+        this.removeChildren();
 
         for (let i = 0; i < Game.CONFIG.SYMBOL_ROWS; i++) {
-
-            
+ 
             const y = (Game.CONFIG.SYMBOL_ROWS - 1) * Game.CONFIG.SYMBOL_HEIGHT - i * Game.CONFIG.SYMBOL_HEIGHT;  
             let settledPosition : Point = new Point(0,y);
             let startPosition : Point;
@@ -46,6 +49,11 @@ export class Reel extends Container{
     public tumbleOut() : void {
         for (let i = 0; i < this._currentSymbols.length; i++) {
             this._currentSymbols[i].tumbleOut();
+        }
+    }
+    public tumbleIn() : void {
+        for (let i = 0; i < this._currentSymbols.length; i++) {
+            this._currentSymbols[i].tumbleIn();
         }
     }
 
