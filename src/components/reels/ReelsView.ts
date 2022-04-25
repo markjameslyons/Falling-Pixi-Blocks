@@ -13,8 +13,6 @@ export class ReelsView extends Container{
 
     private _model : ReelsModel;
 
-    //private _reelsContainer : Container = new Container();
-
     private _previousReelsState : ReelsState = ReelsState.IDLE;
 
     constructor(){
@@ -29,22 +27,19 @@ export class ReelsView extends Container{
         const width = (Game.CONFIG.SYMBOL_WIDTH * Game.CONFIG.SYMBOL_COLS) as number;
         const height = (Game.CONFIG.SYMBOL_HEIGHT * Game.CONFIG.SYMBOL_ROWS) as number; 
         const backer = new Graphics();
-        backer.beginFill(0x000000);
+        backer.beginFill(0x222222);
         backer.drawRect(0,0,width, height);
         backer.endFill();
         this.addChild(backer);
 
         // add a mask to the reels container
-
         const reelMask = new Graphics();
-        reelMask.beginFill(0x000000, 0.5);
+        reelMask.beginFill(0x000000, 1);
         reelMask.drawRect(0, 0, width, height);
         reelMask.endFill();
         this.addChild(reelMask);
         this.mask = reelMask;
-       // this.addChild(this._reelsContainer);
         this._setReelsAndSymbols();
-        this.scale.set(0.7);
     }
 
     private _setReelsAndSymbols() : void {
@@ -63,20 +58,18 @@ export class ReelsView extends Container{
     public _startTumbleOut() : void {
 
         this._reels.forEach((reel:Reel, i : number) => {
-            // set a delay between each reel stack
+            // set a delay between starting each reel stack
             gsap.delayedCall(i * Game.CONFIG.TIME_BETWEEN_REELS / 1000, ()=>{
                 reel.tumbleOut();
             });
         });
 
-        // TODO - Just set a delayed call to trigger the drop in for now
-        gsap.delayedCall(1, () => {
-            this._model.currentState = ReelsState.SPIN_IN
-        });
     }
 
     public _startTumbleIn() : void {
+        
         this._setIncomingSymbols();
+
         this._reels.forEach((reel:Reel, i : number) => {
             // set a delay between each reel stack
             gsap.delayedCall(i * Game.CONFIG.TIME_BETWEEN_REELS / 1000, ()=>{

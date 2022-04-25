@@ -3,7 +3,8 @@ import { ReelsView } from "./components/reels/ReelsView";
 import { ReelsModel } from "./components/reels/ReelsModel";
 import { ReelsController } from "./components/reels/ReelsController";
 import { UIView } from "./components/ui/UIView";
-import { UIController } from "./components/ui/UIController";
+import { EventBus, Registry } from "./components/events/EventBus";
+import { gsap } from "gsap";
 
 export class Game{
 
@@ -18,13 +19,13 @@ export class Game{
 
     private _renderer: PIXI.AbstractRenderer;
     private _stage : PIXI.Container;
-
     private _uiView : UIView;
-    private _uiController : UIController;
-    
     private _reelsView : ReelsView;
     private _reelsModel : ReelsModel;
     private _reelsController : ReelsController;
+    
+    private _onStartTumbleListener : Registry | undefined;
+    private _tumbleInListener : Registry | undefined;
 
     constructor()
     {
@@ -43,10 +44,14 @@ export class Game{
         
         // instantiate UI classes
         this._uiView = new UIView();
-        this._uiController = new UIController(this._uiView);
 
         // Tell the renderer to render the stage, this will be our main container
         this._stage = new PIXI.Container();
+
+        // Set up event listener for spin button press
+        this._onStartTumbleListener = EventBus.getInstance().register('onTumbleStart',this._onSpinStart.bind(this));
+        // set up listener for reel spin complete
+        this._tumbleInListener = EventBus.getInstance().register('onTumbleInComplete',this._onSpinComplete.bind(this));
     }
 
     public async init() {
@@ -56,28 +61,34 @@ export class Game{
         });
 
         // load the ui assets
-        await this._uiController.loadAssets().catch(error => {
+        await this._uiView.loadAssets().catch(error => {
             console.log(error.message);
         });
 
-        // init the controllers
+        // init the reels and ui
         this._reelsController.init();
-        this._uiController.init();
+        this._uiView.init();
 
         // Add the views to the stage and position the stage
         this._stage.addChild(this._reelsView, this._uiView);
         this._stage.pivot.set(this._reelsView.width / 2, 0);
         this._stage.position.set(window.innerWidth / 2, 50);
-
+        this._stage.scale.set(0.7);
         // Start the game loop
         this._start();
+    }
 
-        // Simulate spin button
-        setTimeout(() => this._reelsController.startSpin(), 2000);
+    private _onSpinStart() : void {
+        this._reelsController.startSpin();
+    }
+
+    private _onSpinComplete() : void {
+        this._uiView.enableSpinButton();
     }
 
     private _start() : void {
-        PIXI.Ticker.shared.add(this._onTick, this)
+        PIXI.Ticker.shared.add(this._onTick, this);
+        this._uiView.enableSpinButton();
 	}
 
     private _onTick(deltaTime:number) : void {

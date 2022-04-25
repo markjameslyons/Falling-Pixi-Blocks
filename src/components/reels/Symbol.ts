@@ -1,15 +1,20 @@
 import { Point, Sprite, Texture } from "pixi.js";
 import { Game } from "../../Game";
 import { gsap } from "gsap";
+import { EventBus } from "../events/EventBus";
 
 export class Symbol extends Sprite{
 
     private _delayTime : number = 0;
     private _stopPositionY : number  = 1000;
-    private _reelsPosition : Point | undefined;;
+    private _reelsPosition : Point | undefined;
+    private _symbolIndex : number;
+    private _reelIndex : number;
 
-    constructor(symbolIndex: number, reelsPosition : Point, startPosition? : Point){
+    constructor(symbolIndex: number, reelIndex: number, reelsPosition : Point, startPosition? : Point){
         super();
+        this._symbolIndex = symbolIndex;
+        this._reelIndex = reelIndex;
         this._delayTime = symbolIndex * Game.CONFIG.TIME_BETWEEN_SYMBOLS;
         if(startPosition !== undefined){
             this.position.set(startPosition.x, startPosition.y);
@@ -24,6 +29,9 @@ export class Symbol extends Sprite{
         this.texture = Texture.from(`symbol_${symbolNum}`);
     }
 
+    /**
+     * TODO - use Pixi ticker update
+     */
     public tumbleOut() : GSAPTween {
         const stopPosition = (3 * this.height) + 50;
         const speed = 4000;
@@ -32,15 +40,20 @@ export class Symbol extends Sprite{
             y : stopPosition,
             duration : duration,
             delay : this._delayTime / 1000,
-            ease: "powe4.in",
+            ease: "power4.in",
             callbackScope : this,
             onComplete : () => {
-                console.log("symbol out");
+                if(this._reelIndex === Game.CONFIG.SYMBOL_COLS - 1 && this._symbolIndex === 2){
+                    EventBus.getInstance().dispatch<string>('onTumbleOutComplete');
+                }
             }
         });
         return symbolOutTween;
     }
 
+    /**
+     * TODO - use Pixi ticker update
+     */
     public tumbleIn() : GSAPTween {
         if(this._reelsPosition !== undefined){
             const stopPosition = this._reelsPosition.y;
@@ -50,17 +63,22 @@ export class Symbol extends Sprite{
                 y : stopPosition,
                 duration : duration,
                 delay : this._delayTime / 1000,
-                ease: "power2.in",
+                ease: "power4.in",
                 callbackScope : this,
                 onComplete : () => {
                     gsap.fromTo(this,{
                         y : this.y,
                     },{
                         duration : 0.1,
-                        y : this.y-12,
+                        y : this.y-8,
                         yoyo : true,
                         repeat : 1
                     });
+
+                    if(this._reelIndex === Game.CONFIG.SYMBOL_COLS - 1 && this._symbolIndex === 2){
+                        EventBus.getInstance().dispatch<string>('onTumbleInComplete');
+                    }
+
                 }
             });
             return symbolOutTween;

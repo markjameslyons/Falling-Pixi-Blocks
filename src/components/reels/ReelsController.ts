@@ -3,6 +3,7 @@ import { ReelsView } from "./ReelsView";
 import { ReelsModel, ReelsState } from "./ReelsModel";
 import { Reel } from "./Reel";
 import { Game } from "../../Game";
+import { EventBus, Registry } from "../events/EventBus";
 
 /**
  * Controller Class for the reels set
@@ -13,9 +14,15 @@ export class ReelsController {
     private _model : ReelsModel;
     private _reels : Reel[] = [];
 
+    private _tumbleOutListener : Registry;
+    private _tumbleInListener : Registry | undefined;
+
     constructor(view : ReelsView, model : ReelsModel){
         this._view = view;
         this._model = model;
+
+        this._tumbleOutListener = EventBus.getInstance().register('onTumbleOutComplete',this.tumbleOutComplete.bind(this));
+        this._tumbleInListener = EventBus.getInstance().register('onTumbleInComplete',this._onSpinComplete.bind(this));
     }
 
     public init() : void {
@@ -32,7 +39,16 @@ export class ReelsController {
     public startSpin() : void {
         // change the reels state to kick off spin in view
         this._model.currentState = ReelsState.SPIN_OUT;
-        
+    }
+
+    public tumbleOutComplete() : void {
+        // change the reels state to kick off spin in view
+        this._model.currentState = ReelsState.SPIN_IN;
+    }
+
+    private _onSpinComplete() : void {
+        // reset the spin button now the reels have resolved
+        this._model.currentState = ReelsState.IDLE;
     }
 
     public async loadAssets() : Promise<Loader> {

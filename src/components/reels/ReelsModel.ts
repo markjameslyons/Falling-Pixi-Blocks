@@ -19,8 +19,4 @@ export class ReelsModel{
         return this._currentState;
     }
 
-    public init() : void {
-
-    }
-
 }
