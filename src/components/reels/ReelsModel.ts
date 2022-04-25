@@ -1,4 +1,4 @@
-export enum ReelState {
+export enum ReelsState {
     IDLE,
     SPIN_OUT,
     SPIN_IN
@@ -9,9 +9,9 @@ export enum ReelState {
  */
 export class ReelsModel{
 
-    private _currentState : ReelState;
+    private _currentState : ReelsState;
 
-    set currentState(state: ReelState){
+    set currentState(state: ReelsState){
         this._currentState = state;
     }
 

@@ -9,6 +9,7 @@
     "launch": "webpack serve"
   },
   "dependencies": {
+    "gsap": "^3.10.4",
     "pixi.js": "^6.2.0"
   },
   "devDependencies": {

@@ -12,8 +12,8 @@ export class Game{
         SYMBOL_HEIGHT : 226,
         SYMBOL_ROWS : 3,
         SYMBOL_COLS : 5,
-        TIME_BETWEEN_SYMBOLS : 300,
-        TIME_BETWEEN_REELS : 100
+        TIME_BETWEEN_SYMBOLS : 120,
+        TIME_BETWEEN_REELS : 60
     };
 
     private _renderer: PIXI.AbstractRenderer;
@@ -37,8 +37,8 @@ export class Game{
         document.body.appendChild(this._renderer.view);
         
         // instantiate Reels classes
-        this._reelsView = new ReelsView();
         this._reelsModel = new ReelsModel();
+        this._reelsView = new ReelsView();
         this._reelsController = new ReelsController(this._reelsView, this._reelsModel);
         
         // instantiate UI classes
@@ -72,22 +72,16 @@ export class Game{
         // Start the game loop
         this._start();
 
+        // Simulate spin button
         setTimeout(() => this._reelsController.startSpin(), 2000);
     }
 
     private _start() : void {
-		var lastTime = requestAnimationFrame(()=>{});
-		function loopHandler(time: number){
-			this.onTick(time - lastTime);
-			requestAnimationFrame(loopHandler.bind(this));
-			lastTime = time;
-		}
-		loopHandler.call(this, lastTime);
-
+        PIXI.Ticker.shared.add(this._onTick, this)
 	}
 
-    private onTick() : void {
+    private _onTick(deltaTime:number) : void {
         this._renderer.render(this._stage);
-        this._reelsController.update();
+        this._reelsView.update();
     }
 }
