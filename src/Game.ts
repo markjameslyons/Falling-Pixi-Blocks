@@ -4,7 +4,6 @@ import { ReelsModel } from "./components/reels/ReelsModel";
 import { ReelsController } from "./components/reels/ReelsController";
 import { UIView } from "./components/ui/UIView";
 import { EventBus, Registry } from "./components/events/EventBus";
-import { gsap } from "gsap";
 
 export class Game{
 
