@@ -34,12 +34,16 @@ export class SpinButton extends Sprite{
 
     public enable() : void {
         this.texture = this._enabledTexture;
+        this.tint = 0xFFFFFF;
+        this._label.tint = 0xFFFFFF;
         this._enabled = true;
         this.interactive = true;
         this.buttonMode = true;
     }
 
     public disable() : void {
+        this.tint = 0x666666;
+        this._label.tint = 0x666666;
         this.texture = this._disabledTexture;
         this.interactive = false;
         this.buttonMode = false;
@@ -47,12 +51,15 @@ export class SpinButton extends Sprite{
 
     private _setHandlers() : void {
         this.on("pointerup", this._spinPress);
+        this.on("pointerdown", this._onPointerDown);
         this.on("pointerover", this._onPointerOver);
         this.on("pointerout", this._onPointerOut);
     }
 
     private _spinPress() : void {
-        if(this._enabled){
+        if(this._enabled) {
+            this.texture = this._overTexture;
+            this.scale.set(1);
             EventBus.getInstance().dispatch<string>('onTumbleStart');
             this.disable();
         }
@@ -66,7 +73,15 @@ export class SpinButton extends Sprite{
 
     private _onPointerOut() : void {
         if(this._enabled){
+            this.scale.set(1);
             this.texture = this._enabledTexture;
+        }
+    }
+
+    private _onPointerDown() : void {
+        if(this._enabled){
+            this.scale.set(0.97);
+            this.texture = this._pressedTexture;
         }
     }
 
