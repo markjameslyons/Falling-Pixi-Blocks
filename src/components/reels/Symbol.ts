@@ -15,7 +15,7 @@ export class Symbol extends Sprite{
         super();
         this._symbolIndex = symbolIndex;
         this._reelIndex = reelIndex;
-        this._delayTime = symbolIndex * Game.CONFIG.TIME_BETWEEN_SYMBOLS;
+        this._delayTime = symbolIndex * Game.CONFIG.SYMBOLS_CONFIGS[0].TIME_BETWEEN_SYMBOLS;
         if(startPosition !== undefined){
             this.position.set(startPosition.x, startPosition.y);
         }
@@ -32,8 +32,8 @@ export class Symbol extends Sprite{
     /**
      * TODO - use Pixi ticker update
      */
-    public tumbleOut() : GSAPTween {
-        const stopPosition = (3 * this.height) + 50;
+    public tumbleOut(lastReel : number) : GSAPTween {
+        const stopPosition = (Game.CONFIG.SYMBOL_ROWS * this.height) + 50;
         const speed = 4000;
         const duration = this._stopPositionY / speed;
         const symbolOutTween = gsap.to(this, {
@@ -43,8 +43,8 @@ export class Symbol extends Sprite{
             ease: "power4.in",
             callbackScope : this,
             onComplete : () => {
-                if(this._reelIndex === Game.CONFIG.SYMBOL_COLS - 1 && this._symbolIndex === 2){
-                    EventBus.getInstance().dispatch<string>('onTumbleOutComplete');
+                if(this._reelIndex === lastReel && this._symbolIndex === 2){
+                    EventBus.getInstance().dispatch('onTumbleOutComplete');
                 }
             }
         });
