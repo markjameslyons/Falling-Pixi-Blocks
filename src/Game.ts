@@ -3,7 +3,7 @@ import { ReelsView } from "./components/reels/ReelsView";
 import { ReelsModel } from "./components/reels/ReelsModel";
 import { ReelsController } from "./components/reels/ReelsController";
 import { UIView } from "./components/ui/UIView";
-import { EventBus, Registry } from "./components/events/EventBus";
+import { EventBus } from "./components/events/EventBus";
 
 export class Game{
 
@@ -16,15 +16,16 @@ export class Game{
         TIME_BETWEEN_REELS : 60
     };
 
+    public static ON_TUMBLE_IN_END : string = "onTumbleInComplete";
+    public static ON_TUMBLE_OUT_END : string = "onTumbleOutComplete";
+    public static ON_START_TUMBLE : string = "onTumbleStart";
+
     private _renderer: PIXI.AbstractRenderer;
     private _stage : PIXI.Container;
     private _uiView : UIView;
     private _reelsView : ReelsView;
     private _reelsModel : ReelsModel;
     private _reelsController : ReelsController;
-    
-    private _onStartTumbleListener : Registry | undefined;
-    private _tumbleInListener : Registry | undefined;
 
     constructor()
     {
@@ -48,9 +49,9 @@ export class Game{
         this._stage = new PIXI.Container();
 
         // Set up event listener for spin button press
-        this._onStartTumbleListener = EventBus.getInstance().register('onTumbleStart',this._onSpinStart.bind(this));
+        EventBus.getInstance().register(Game.ON_START_TUMBLE,this._onSpinStart.bind(this));
         // set up listener for reel spin complete
-        this._tumbleInListener = EventBus.getInstance().register('onTumbleInComplete',this._onSpinComplete.bind(this));
+        EventBus.getInstance().register(Game.ON_TUMBLE_IN_END,this._onSpinComplete.bind(this));
     }
 
     public async init() {
@@ -90,7 +91,7 @@ export class Game{
         this._uiView.enableSpinButton();
 	}
 
-    private _onTick(deltaTime:number) : void {
+    private _onTick() : void {
         this._renderer.render(this._stage);
         this._reelsView.update();
     }

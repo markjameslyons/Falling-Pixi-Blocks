@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "gsap": "^3.10.4",
+    "howler": "^2.2.3",
     "pixi.js": "^6.2.0"
   },
   "devDependencies": {
+    "@types/howler": "^2.2.7",
     "@types/pixi.js": "^5.0.0",
     "@webpack-cli/generators": "^1.1.0",
     "autoprefixer": "^10.4.0",

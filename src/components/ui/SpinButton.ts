@@ -1,5 +1,7 @@
 import { Sprite, Texture, Text, TextStyle } from "pixi.js";
 import { EventBus } from "../events/EventBus";
+import { Howl } from "howler";
+import { Game } from "../../Game";
 
 export class SpinButton extends Sprite{
 
@@ -9,6 +11,7 @@ export class SpinButton extends Sprite{
     private _pressedTexture : Texture;
     private _enabled : boolean = false;
     private _label : Text;
+    private _sound : Howl;
 
     constructor(){
         super();
@@ -16,6 +19,10 @@ export class SpinButton extends Sprite{
         this._disabledTexture = Texture.from('spin_disabled');
         this._overTexture = Texture.from('spin_over');
         this._pressedTexture = Texture.from('spin_pressed');
+
+        this._sound = new Howl({
+            src : ['sounds/Start_Button.mp3']
+        });
 
         this.texture = this._disabledTexture;
         this._label = new Text('SPIN', new TextStyle({
@@ -60,7 +67,8 @@ export class SpinButton extends Sprite{
         if(this._enabled) {
             this.texture = this._overTexture;
             this.scale.set(1);
-            EventBus.getInstance().dispatch<string>('onTumbleStart');
+            this._sound.play();
+            EventBus.getInstance().dispatch(Game.ON_START_TUMBLE);
             this.disable();
         }
     }
