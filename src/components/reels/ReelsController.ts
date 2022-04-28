@@ -3,7 +3,7 @@ import { ReelsView } from "./ReelsView";
 import { ReelsModel, ReelsState } from "./ReelsModel";
 import { Reel } from "./Reel";
 import { Game } from "../../Game";
-import { EventBus, Registry } from "../events/EventBus";
+import { EventBus } from "../events/EventBus";
 
 /**
  * Controller Class for the reels set
@@ -14,15 +14,12 @@ export class ReelsController {
     private _model : ReelsModel;
     private _reels : Reel[] = [];
 
-    private _tumbleOutListener : Registry;
-    private _tumbleInListener : Registry | undefined;
-
     constructor(view : ReelsView, model : ReelsModel){
         this._view = view;
         this._model = model;
 
-        this._tumbleOutListener = EventBus.getInstance().register('onTumbleOutComplete',this.tumbleOutComplete.bind(this));
-        this._tumbleInListener = EventBus.getInstance().register('onTumbleInComplete',this._onSpinComplete.bind(this));
+        EventBus.getInstance().register(Game.ON_TUMBLE_OUT_END,this.tumbleOutComplete.bind(this));
+        EventBus.getInstance().register(Game.ON_TUMBLE_IN_END,this._onSpinComplete.bind(this));
     }
 
     public init() : void {
@@ -51,7 +48,7 @@ export class ReelsController {
         this._model.currentState = ReelsState.IDLE;
     }
 
-    public async loadAssets() : Promise<Loader> {
+    public loadAssets() : Promise<Loader> {
         return new Promise((resolve)=>{
             Loader.shared.add("symbol_1", "assets/reels/symbol_1.png");
             Loader.shared.add("symbol_2", "assets/reels/symbol_2.png");

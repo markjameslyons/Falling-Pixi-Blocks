@@ -2,6 +2,7 @@ import { Point, Sprite, Texture } from "pixi.js";
 import { Game } from "../../Game";
 import { gsap } from "gsap";
 import { EventBus } from "../events/EventBus";
+import { Howl } from "howler";
 
 export class Symbol extends Sprite{
 
@@ -10,6 +11,7 @@ export class Symbol extends Sprite{
     private _reelsPosition : Point | undefined;
     private _symbolIndex : number;
     private _reelIndex : number;
+    private sound : Howl;
 
     constructor(symbolIndex: number, reelIndex: number, reelsPosition : Point, startPosition? : Point){
         super();
@@ -27,6 +29,10 @@ export class Symbol extends Sprite{
         // For now just assign random texture
         const symbolNum = Math.floor(Math.random() * 8) + 1;
         this.texture = Texture.from(`symbol_${symbolNum}`);
+
+        this.sound = new Howl({
+            src : ['sounds/Reel_Stop_'+(Math.floor(Math.random() * 5) + 1)+".mp3"]
+        });
     }
 
     /**
@@ -44,7 +50,7 @@ export class Symbol extends Sprite{
             callbackScope : this,
             onComplete : () => {
                 if(this._reelIndex === Game.CONFIG.SYMBOL_COLS - 1 && this._symbolIndex === 2){
-                    EventBus.getInstance().dispatch<string>('onTumbleOutComplete');
+                    EventBus.getInstance().dispatch(Game.ON_TUMBLE_OUT_END);
                 }
             }
         });
@@ -74,9 +80,9 @@ export class Symbol extends Sprite{
                         yoyo : true,
                         repeat : 1
                     });
-
+                    this.sound.play();
                     if(this._reelIndex === Game.CONFIG.SYMBOL_COLS - 1 && this._symbolIndex === 2){
-                        EventBus.getInstance().dispatch<string>('onTumbleInComplete');
+                        EventBus.getInstance().dispatch(Game.ON_TUMBLE_IN_END);
                     }
 
                 }
