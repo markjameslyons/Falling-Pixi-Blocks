@@ -1,5 +1,5 @@
 import { Container, Graphics } from "pixi.js";
-import { Game, SYMOL_CONFIG } from "../../Game";
+import { Game } from "../../Game";
 import { Reel } from "./Reel";
 import { ReelsModel, ReelsState } from "./ReelsModel";
 import { gsap } from "gsap";
@@ -14,10 +14,6 @@ export class ReelsView extends Container{
     private _model : ReelsModel;
 
     private _previousReelsState : ReelsState = ReelsState.IDLE;
-
-    private _tumbleConfig : SYMOL_CONFIG;
-
-    private _lastSymbol : number = 0;
 
     constructor(){
         super();
@@ -60,15 +56,14 @@ export class ReelsView extends Container{
     }
 
     public _startTumbleOut() : void {
-        const randomConfig = Math.floor(Math.random() * (Game.CONFIG.SYMBOLS_CONFIGS.length - 1));
-        this._tumbleConfig = Game.CONFIG.SYMBOLS_CONFIGS[randomConfig];
-        this._lastSymbol = this._tumbleConfig.TIME_BETWEEN_REELS.indexOf(Math.max(...this._tumbleConfig.TIME_BETWEEN_REELS));
+
         this._reels.forEach((reel:Reel, i : number) => {
             // set a delay between starting each reel stack
-            gsap.delayedCall(this._tumbleConfig.TIME_BETWEEN_REELS[i] / 1000, ()=>{
-                reel.tumbleOut(this._lastSymbol);
+            gsap.delayedCall(i * Game.CONFIG.TIME_BETWEEN_REELS / 1000, ()=>{
+                reel.tumbleOut();
             });
         });
+
     }
 
     public _startTumbleIn() : void {
@@ -77,7 +72,7 @@ export class ReelsView extends Container{
 
         this._reels.forEach((reel:Reel, i : number) => {
             // set a delay between each reel stack
-            gsap.delayedCall(this._tumbleConfig.TIME_BETWEEN_REELS[i] / 1000, ()=>{
+            gsap.delayedCall(i * Game.CONFIG.TIME_BETWEEN_REELS / 1000, ()=>{
                 reel.tumbleIn();
             });
         });

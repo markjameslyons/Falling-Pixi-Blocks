@@ -5,11 +5,6 @@ import { ReelsController } from "./components/reels/ReelsController";
 import { UIView } from "./components/ui/UIView";
 import { EventBus, Registry } from "./components/events/EventBus";
 
-export interface SYMOL_CONFIG {
-    TIME_BETWEEN_SYMBOLS : number,
-    TIME_BETWEEN_REELS : number[]
-};
-
 export class Game{
 
     public static CONFIG = {
@@ -17,55 +12,9 @@ export class Game{
         SYMBOL_HEIGHT : 226,
         SYMBOL_ROWS : 3,
         SYMBOL_COLS : 5,
-        SYMBOLS_CONFIGS : [
-            {
-                TIME_BETWEEN_SYMBOLS : 120,
-                TIME_BETWEEN_REELS : [
-                    100,300,500,300,100
-                ]
-            },
-            {
-                TIME_BETWEEN_SYMBOLS : 120,
-                TIME_BETWEEN_REELS : [
-                    500,400,300,200,100
-                ]
-            },
-            {
-                TIME_BETWEEN_SYMBOLS : 120,
-                TIME_BETWEEN_REELS : [
-                    500,400,300,200,100
-                ]
-            },
-            {
-                TIME_BETWEEN_SYMBOLS : 120,
-                TIME_BETWEEN_REELS : [
-                    500,500,100,500,500
-                ]
-            },
-            {
-                TIME_BETWEEN_SYMBOLS : 120,
-                TIME_BETWEEN_REELS : [
-                    500,300,100,300,500
-                ]
-            },
-            {
-                TIME_BETWEEN_SYMBOLS : 120,
-                TIME_BETWEEN_REELS : [
-                    100,200,300,400,500
-                ]
-            },
-            {
-                TIME_BETWEEN_SYMBOLS : 120,
-                TIME_BETWEEN_REELS : [
-                    500,400,300,200,100
-                ]
-            }
-        ],
-
-
+        TIME_BETWEEN_SYMBOLS : 120,
+        TIME_BETWEEN_REELS : 60
     };
-
-    //public static REELS_DELAY : number[] = ;
 
     private _renderer: PIXI.AbstractRenderer;
     private _stage : PIXI.Container;

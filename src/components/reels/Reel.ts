@@ -33,7 +33,6 @@ export class Reel extends Container{
             // Set the current position data as on the reels
             let settledPosition : Point = new Point(0,y);
             let startPosition : Point;
-            
             if(!init){
                 // Set the start position data as above the reels + and extra 120px to stretch out the easing a little
                 startPosition = new Point(0, 0 - Game.CONFIG.SYMBOL_HEIGHT - 120);
@@ -46,9 +45,9 @@ export class Reel extends Container{
         }   
     }
 
-    public tumbleOut(lastReel:number) : void {
+    public tumbleOut() : void {
         for (let i = 0; i < this._currentSymbols.length; i++) {
-            this._currentSymbols[i].tumbleOut(lastReel);
+            this._currentSymbols[i].tumbleOut();
         }
     }
     
